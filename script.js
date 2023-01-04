@@ -1,22 +1,22 @@
 class Tree {
     
     constructor(position, height, brach_length, spread_degree) {
-        self.position = position
-        self.height = height
-        self.brach_length = brach_length
-        self.spread_degree = spread_degree
+        this.position = position
+        this.height = height
+        this.brach_length = brach_length
+        this.spread_degree = spread_degree
 
-        self.branches = []
+        this.branches = []
     }
 
     create(number_branches) {
         // Will initialize the tree structure
-        const position = self.position
-        const height = self.height
-        const branch_length = self.brach_length
-        const spread_degree = self.spread_degree
+        const position = this.position
+        const height = this.height
+        const branch_length = this.brach_length
+        const spread_degree = this.spread_degree
 
-        if (height <= 1) return 
+        if (height <= 0) return 
 
         for (let i = 0; i < number_branches; i++) {
             const new_x = position[0] + branch_length * Math.cos(i * spread_degree)
@@ -25,23 +25,28 @@ class Tree {
 
             let new_branch = new Tree(new_position, height - 1, branch_length / 2, spread_degree)
 
-            self.branches.push(new_branch)
-            new_branch.create(2)
+            this.branches.push(new_branch)     
+        }
+
+        for (let branch of this.branches) {
+            branch.create(2)
         }
 
     }
 
     get_tree_points() {
-        if (self.branches.brach_length == 0) {
+        console.log(this.branches.length)
+        
+        if (this.branches.length == 0) {
             return []
         } 
         
         let points = []
         
-        for (let branch of self.branches) {
-            points.push([self.position, branch.position])
+        for (let branch of this.branches) {
+            points.push([this.position, branch.position])
             
-            points.concat(branch.get_tree_points())
+            points = points.concat(branch.get_tree_points())
         }
 
         return points
@@ -53,4 +58,8 @@ function Render (tree) {
     console.log(tree)
 }
 
-new_tree = Tree()
+new_tree = new Tree([0,0], 3, 10, Math.PI)
+
+new_tree.create(2)
+
+Render(new_tree.get_tree_points())
