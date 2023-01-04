@@ -1,16 +1,16 @@
 class Tree {
     
-    constructor(position, height, brach_length, orientation) {
+    constructor(position, height, brach_length, orientation, spread_degree) {
         this.orientation = orientation
         this.position = position
         this.height = height
         this.brach_length = brach_length
-        this.spread_degree = 1
+        this.spread_degree = spread_degree
 
         this.branches = []
     }
 
-    create(number_branches) {
+    grow(number_branches) {
         // Will initialize the tree structure
         const position = this.position
         const height = this.height
@@ -19,19 +19,22 @@ class Tree {
 
         if (height <= 0) return 
 
-        for (let i = 0; i < number_branches; i++) {
-            const new_orientation = i * spread_degree + this.orientation * 0.75
+        for (let i = 1; i <= number_branches; i++) {
+            
+            let new_orientation = this.orientation - spread_degree * Math.ceil(i/2)
+            if (i % 2 == 0) new_orientation = this.orientation + spread_degree * Math.ceil(i/2)
+        
             const new_x = position[0] + branch_length * Math.cos(new_orientation)
             const new_y = position[1] + branch_length * Math.sin(new_orientation)
             const new_position = [new_x, new_y]
 
-            let new_branch = new Tree(new_position, height - 1, branch_length / 1.2, new_orientation)
+            let new_branch = new Tree(new_position, height - 1, branch_length / 1.2, new_orientation, this.spread_degree)
 
             this.branches.push(new_branch)     
         }
 
         for (let branch of this.branches) {
-            branch.create(2)
+            branch.grow(number_branches)
         }
 
     }
@@ -55,6 +58,8 @@ class Tree {
 }
 
 function Render (context, tree) {
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
     
     for (let [p1, p2] of tree) {
         context.beginPath()
@@ -64,11 +69,28 @@ function Render (context, tree) {
     
 }
 
+const direction_slider = document.getElementById("tree-direction")
+const spread_slider = document.getElementById("branches-spread")
+
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext('2d')
 canvas.width = 500
 canvas.height = 500
-new_tree = new Tree([250, 250], 3, 50, 3.1415 * 3/2)
-new_tree.create(2)
 
-Render(context, new_tree.get_tree_points())
+const sliders = document.getElementsByTagName("input")
+
+for (let slider of sliders) {
+    slider.addEventListener("input", updateTree)
+}
+
+function updateTree () {
+    const direction_value = 2*Math.PI * Number(direction_slider.value)/100
+    const spread_value = Math.PI/3 * Number(spread_slider.value)/100
+
+    console.log(direction_value, spread_value)
+
+    new_tree = new Tree([250, 250], 3, 50, direction_value, spread_value)
+    new_tree.grow(4)
+    Render(context, new_tree.get_tree_points())
+}
+
