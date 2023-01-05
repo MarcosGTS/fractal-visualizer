@@ -78,7 +78,7 @@ class Tree {
 
     }
 
-    get_tree_points() {
+    get_tree_lines() {
         
         if (this.branches.length == 0) {
             return []
@@ -87,9 +87,14 @@ class Tree {
         let points = []
         
         for (let branch of this.branches) {
-            points.push([this.position, branch.position])
+            const line = {
+                height: branch.height,
+                coordinates: [this.position, branch.position]
+            }
+
+            points.push(line)
             
-            points = points.concat(branch.get_tree_points())
+            points = points.concat(branch.get_tree_lines())
         }
 
         return points
@@ -100,9 +105,20 @@ function Render (context, tree) {
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     
-    for (let [p1, p2] of tree) {
+    const lines = tree.get_tree_lines()
+    const width_factor = 10 / tree.height
+
+    for (let line of lines) {
+        const [p1, p2] = line.coordinates
+        
+       
+        context.lineWidth = line.height * width_factor
+        context.lineCap = 'round'
+
         context.beginPath()
         context.moveTo (p1[0], p1[1]);   context.lineTo (p2[0], p2[1]);  
+
+        context.strokeStyle = line.height > 3 ? "rgb(139,69,19)" : "rgb(58,95,11)"
         context.stroke()
     }
     
@@ -127,7 +143,7 @@ for (let slider of sliders) {
 
 function updateTree () {
     const position = [250, 400]
-    const branch_size = 50
+    const branch_size = 70
     const height_value = Number(height_slider.value)
     const spread_factor_value = Number(spread_factor_slider.value)
     const decrease_factor_value = Number(decrease_factor_slider.value)
@@ -144,7 +160,7 @@ function updateTree () {
         decrease_factor_value) // Decrease Factor
 
     new_tree.create(Math.PI * 3/2, direction_value)
-    Render(context, new_tree.get_tree_points())
+    Render(context, new_tree)
 }
 
 updateTree()
