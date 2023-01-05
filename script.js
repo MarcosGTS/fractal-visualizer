@@ -1,28 +1,37 @@
 class Tree {
     
-    constructor(position, height, brach_length, 
-                orientation, spread_degree) {
+    constructor(position, height, branch_length, 
+                orientation, spread_degree, 
+                spread_factor, decrease_factor) {
+
         this.orientation = orientation
         this.position = position
         this.height = height
         
-
         // changeble parameters
-        this.brach_length = brach_length
+        this.branch_length = branch_length
         this.spread_degree = spread_degree
-        this.spread_factor = 2
+        this.spread_factor = spread_factor
+        this.decrease_factor = decrease_factor
 
         this.branches = []
     }
 
     create(inital_orientation, orientation) {
-        const new_orientation = inital_orientation
-        
-        const new_x = position[0] + branch_length * Math.cos(new_orientation)
-        const new_y = position[1] + branch_length * Math.sin(new_orientation)
+        const new_orientation = inital_orientation 
+        const new_branch_length = this.branch_length * this.decrease_factor
+        const new_x = this.position[0] + this.branch_length * Math.cos(new_orientation)
+        const new_y = this.position[1] + this.branch_length * Math.sin(new_orientation)
         const new_position = [new_x, new_y]
 
-        let new_branch = new Tree(new_position, height - 1, branch_length / 1.2, new_orientation, this.spread_degree)
+        let new_branch = new Tree(
+            new_position, 
+            this.height - 1, 
+            new_branch_length, 
+            new_orientation, 
+            this.spread_degree,
+            this.spread_factor,
+            this.decrease_factor)
 
         this.branches.push(new_branch) 
         
@@ -33,7 +42,7 @@ class Tree {
         // Will initialize the tree structure
         const position = this.position
         const height = this.height
-        const branch_length = this.brach_length
+        const branch_length = this.branch_length
         const spread_degree = this.spread_degree
 
         if (height <= 0) return 
@@ -45,12 +54,20 @@ class Tree {
             if (number_branches % 2 == 0 && i == 0) continue
 
             const new_orientation = this.orientation + spread_degree * i + orienation
-        
+            const new_branch_length = branch_length * this.decrease_factor
+
             const new_x = position[0] + branch_length * Math.cos(new_orientation)
             const new_y = position[1] + branch_length * Math.sin(new_orientation)
             const new_position = [new_x, new_y]
 
-            let new_branch = new Tree(new_position, height - 1, branch_length / 1.2, new_orientation, this.spread_degree)
+            let new_branch = new Tree(
+                new_position, 
+                height - 1, 
+                new_branch_length, 
+                new_orientation, 
+                this.spread_degree,
+                this.spread_factor,
+                this.decrease_factor)
 
             this.branches.push(new_branch)     
         }
@@ -93,6 +110,9 @@ function Render (context, tree) {
 
 const direction_slider = document.getElementById("tree-direction")
 const spread_slider = document.getElementById("branches-spread")
+const height_slider = document.getElementById("height")
+const spread_factor_slider = document.getElementById("spread-factor")
+const decrease_factor_slider = document.getElementById("decrease-factor")
 
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext('2d')
@@ -106,17 +126,22 @@ for (let slider of sliders) {
 }
 
 function updateTree () {
+    const position = [250, 400]
+    const branch_size = 50
+    const height_value = Number(height_slider.value)
+    const spread_factor_value = Number(spread_factor_slider.value)
+    const decrease_factor_value = Number(decrease_factor_slider.value)
     const direction_value = Math.PI * Number(direction_slider.value) / 100
-    const spread_value = Math.PI/3 * Number(spread_slider.value)/100
-
-    console.log(direction_value, spread_value)
+    const spread_value = Math.PI/3 * Number(spread_slider.value) / 100
 
     new_tree = new Tree(
-        position = [250, 250], 
-        height = 10, 
-        branch_length = 50, 
-        orientation = direction_value, 
-        spread_degree = spread_value)
+        position,              // Position 
+        height_value,          // Height
+        branch_size,           // Branch Size
+        direction_value,       // Direction
+        spread_value,          // Spread between branches
+        spread_factor_value,   // Spread Factor
+        decrease_factor_value) // Decrease Factor
 
     new_tree.create(Math.PI * 3/2, direction_value)
     Render(context, new_tree.get_tree_points())
