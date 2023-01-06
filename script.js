@@ -110,15 +110,15 @@ function Render (context, tree) {
 
     for (let line of lines) {
         const [p1, p2] = line.coordinates
+        const [red, green, blue] = get_color_between([59, 95, 11],[139, 69, 19], line.height / tree.height)
         
-       
         context.lineWidth = line.height * width_factor
         context.lineCap = 'round'
 
         context.beginPath()
         context.moveTo (p1[0], p1[1]);   context.lineTo (p2[0], p2[1]);  
 
-        context.strokeStyle = line.height > 3 ? "rgb(139,69,19)" : "rgb(58,95,11)"
+        context.strokeStyle = `rgb(${red},${green},${blue})`
         context.stroke()
     }
     
@@ -161,6 +161,18 @@ function updateTree () {
 
     new_tree.create(Math.PI * 3/2, direction_value)
     Render(context, new_tree)
+}
+
+function lerp(start_point, goal, t) {
+    return start_point + t * (goal - start_point)
+}
+
+function get_color_between(color1, color2, t) {
+    const red_channel = lerp(color1[0], color2[0], t)
+    const green_channel = lerp(color1[1], color2[1], t)
+    const blue_channel = lerp(color1[2], color2[2], t)
+
+    return [red_channel, green_channel, blue_channel]
 }
 
 updateTree()
