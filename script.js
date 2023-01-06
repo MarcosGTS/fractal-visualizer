@@ -1,7 +1,7 @@
 let MIN_WIDTH = 2
 let MAX_WIDTH = 10
 let PRIMARY_COLOR = [59, 95, 11]
-let SECUNDARY_COLOR = [139, 69, 19]
+let SECONDARY_COLOR = [139, 69, 19]
 
 class Tree {
     
@@ -116,7 +116,7 @@ function Render (context, tree) {
     for (let line of lines) {
         const percentage = line.height / max_height
         const [p1, p2] = line.coordinates
-        const [red, green, blue] = get_color_between(PRIMARY_COLOR, SECUNDARY_COLOR, percentage)
+        const [red, green, blue] = get_color_between(PRIMARY_COLOR, SECONDARY_COLOR, percentage)
         
         context.lineWidth = lerp(MIN_WIDTH, MAX_WIDTH, percentage)
         context.lineCap = 'round'
@@ -135,16 +135,34 @@ const spread_slider = document.getElementById("branches-spread")
 const height_slider = document.getElementById("height")
 const spread_factor_slider = document.getElementById("spread-factor")
 const decrease_factor_slider = document.getElementById("decrease-factor")
+const primary_color_input = document.getElementById("primary-color")
+const secondary_color_input = document.getElementById("secondary-color")
 
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext('2d')
 canvas.width = 500
 canvas.height = 500
 
-const sliders = document.getElementsByTagName("input")
+const inputs = document.getElementsByTagName("input")
 
-for (let slider of sliders) {
-    slider.addEventListener("input", updateTree)
+for (let input of inputs) {
+    input.addEventListener("input", updateTree)
+}
+
+primary_color_input.addEventListener("input", () => {
+    PRIMARY_COLOR = convert_hex_to_rgb(primary_color_input.value)
+})
+
+secondary_color_input.addEventListener("input", () => {
+    SECONDARY_COLOR = convert_hex_to_rgb(secondary_color_input.value)
+})
+
+function convert_hex_to_rgb(color) {
+    const r = parseInt(color.substr(1, 2), 16)
+    const g = parseInt(color.substr(3, 2), 16)
+    const b = parseInt(color.substr(5, 2), 16)
+
+    return [r, g, b]
 }
 
 function updateTree () {
