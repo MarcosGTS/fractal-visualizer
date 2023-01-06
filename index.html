@@ -6,26 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fractal Visualizer</title>
     <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Fractal Visualizer</h1>
-    <canvas id="canvas"></canvas>
-    <div>
-
-        <!-- Estructural Parameters -->
-        <input type="range" min="-50" max="50" step="1" value="0" id="tree-direction">
-        <input type="range" min="0" max="100" step="1" value="50"id="branches-spread">
-        <input type="range" min="1" max="3" step="1" value="2" id="spread-factor">
-        <input type="range" min="0" max="1" step="0.05" value="0.8"id="decrease-factor">
-        <input type="range" min="1" max="15" step="1" value="4"id="height">
-
-        <!-- Reder Parameters -->
-        <input type="range" min="1" max="20" step="1" value="2"id="min-width">
-        <input type="range" min="1" max="20" step="1" value="10"id="max-width">
-         
-        <input type="color" id="primary-color">
-        <input type="color" id="secondary-color">
-    </div>
+    <main>
+        <canvas id="canvas"></canvas>
+        <div id="parameters">
+            <section>
+                <!-- Estructural Parameters -->
+                <h3>Structural Parameters</h3>
+                <hr>
+                <div class="parameter">
+                    <span>Direction</span>
+                    <input type="range" min="-50" max="50" step="1" value="0" id="tree-direction">
+                </div>
+                <div class="parameter">
+                    <span>Spread</span>
+                    <input type="range" min="0" max="100" step="1" value="50"id="branches-spread">
+                </div>
+                <div class="parameter">
+                    <span>Branchs</span>
+                    <input type="range" min="1" max="3" step="1" value="2" id="spread-factor">
+                </div>
+                <div class="parameter">
+                    <span>Length</span>
+                    <input type="range" min="0" max="1" step="0.05" value="0.8"id="decrease-factor">
+                </div>
+                <div class="parameter">
+                    <span>Height</span>
+                    <input type="range" min="1" max="15" step="1" value="4"id="height">
+                </div>
+            </section>
+            <section>
+                <!-- Reder Parameters -->
+                <h3>Rederer Parameters</h3>
+                <hr>
+                <div class="parameter">
+                    <span>Min Width</span>
+                    <input type="range" min="1" max="20" step="1" value="2"id="min-width">
+                </div>
+                <div class="parameter">
+                    <span>Max Width</span>
+                    <input type="range" min="1" max="20" step="1" value="10"id="max-width">
+                </div>
+                <div class="parameter">
+                    <span>Primary Color</span>
+                    <input type="color" id="primary-color">
+                </div>
+                <div class="parameter">
+                    <span>Secondary Color</span>
+                    <input type="color" id="secondary-color">
+                </div>
+            </section>
+        </div>
+    </main>
     
+    <footer>
+        Copyright © 2023 MarcosGTS
+        <a href="https://github.com/MarcosGTS/fractal-visualizer" class="github" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/1051/1051326.png"></a>
+    </footer>
 </body>
 </html>
