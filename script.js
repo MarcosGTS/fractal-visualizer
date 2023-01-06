@@ -135,8 +135,11 @@ const spread_slider = document.getElementById("branches-spread")
 const height_slider = document.getElementById("height")
 const spread_factor_slider = document.getElementById("spread-factor")
 const decrease_factor_slider = document.getElementById("decrease-factor")
+
 const primary_color_input = document.getElementById("primary-color")
 const secondary_color_input = document.getElementById("secondary-color")
+const min_width_slider = document.getElementById("min-width")
+const max_width_slider = document.getElementById("max-width")
 
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext('2d')
@@ -148,14 +151,6 @@ const inputs = document.getElementsByTagName("input")
 for (let input of inputs) {
     input.addEventListener("input", updateTree)
 }
-
-primary_color_input.addEventListener("input", () => {
-    PRIMARY_COLOR = convert_hex_to_rgb(primary_color_input.value)
-})
-
-secondary_color_input.addEventListener("input", () => {
-    SECONDARY_COLOR = convert_hex_to_rgb(secondary_color_input.value)
-})
 
 function convert_hex_to_rgb(color) {
     const r = parseInt(color.substr(1, 2), 16)
@@ -174,6 +169,7 @@ function updateTree () {
     const direction_value = Math.PI * Number(direction_slider.value) / 100
     const spread_value = Math.PI/3 * Number(spread_slider.value) / 100
 
+    // Estructural parameters
     new_tree = new Tree(
         position,              // Position 
         height_value,          // Height
@@ -184,6 +180,14 @@ function updateTree () {
         decrease_factor_value) // Decrease Factor
 
     new_tree.create(Math.PI * 3/2, direction_value)
+    
+    //Rederer paremeters
+    PRIMARY_COLOR = convert_hex_to_rgb(primary_color_input.value)
+    SECONDARY_COLOR = convert_hex_to_rgb(secondary_color_input.value)
+
+    MIN_WIDTH = Number(min_width_slider.value)
+    MAX_WIDTH = Number(max_width_slider.value)
+
     Render(context, new_tree)
 }
 
