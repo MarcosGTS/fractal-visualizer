@@ -1,3 +1,8 @@
+let MIN_WIDTH = 2
+let MAX_WIDTH = 10
+let PRIMARY_COLOR = [59, 95, 11]
+let SECUNDARY_COLOR = [139, 69, 19]
+
 class Tree {
     
     constructor(position, height, branch_length, 
@@ -106,13 +111,14 @@ function Render (context, tree) {
     context.clearRect(0, 0, canvas.width, canvas.height);
     
     const lines = tree.get_tree_lines()
-    const width_factor = 10 / tree.height
+    const max_height = tree.height
 
     for (let line of lines) {
+        const percentage = line.height / max_height
         const [p1, p2] = line.coordinates
-        const [red, green, blue] = get_color_between([59, 95, 11],[139, 69, 19], line.height / tree.height)
+        const [red, green, blue] = get_color_between(PRIMARY_COLOR, SECUNDARY_COLOR, percentage)
         
-        context.lineWidth = line.height * width_factor
+        context.lineWidth = lerp(MIN_WIDTH, MAX_WIDTH, percentage)
         context.lineCap = 'round'
 
         context.beginPath()
