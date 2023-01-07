@@ -22,7 +22,7 @@ class Tree {
         this.branches = []
     }
 
-    create(inital_orientation, orientation) {
+    create(inital_orientation, orientation, random = false) {
         const new_orientation = inital_orientation 
         const new_branch_length = this.branch_length * this.decrease_factor
         const new_x = this.position[0] + this.branch_length * Math.cos(new_orientation)
@@ -40,10 +40,10 @@ class Tree {
 
         this.branches.push(new_branch) 
         
-        new_branch.grow(this.spread_factor, orientation)
+        new_branch.grow(this.spread_factor, orientation, random)
     }
 
-    grow(number_branches, orienation) {
+    grow(number_branches, orienation, random) {
         // Will initialize the tree structure
         const position = this.position
         const height = this.height
@@ -65,9 +65,11 @@ class Tree {
             const new_y = position[1] + branch_length * Math.sin(new_orientation)
             const new_position = [new_x, new_y]
 
-            new_orientation = add_variation(new_orientation, .1)
-            new_branch_length = add_variation(new_branch_length, .05)
-
+            if (random) {
+                new_orientation = add_variation(new_orientation, .1)
+                new_branch_length = add_variation(new_branch_length, .05)
+            }
+            
             let new_branch = new Tree(
                 new_position, 
                 height - 1, 
@@ -135,6 +137,7 @@ const spread_slider = document.getElementById("branches-spread")
 const height_slider = document.getElementById("height")
 const spread_factor_slider = document.getElementById("spread-factor")
 const decrease_factor_slider = document.getElementById("decrease-factor")
+const randomness_input = document.getElementById("randomness")
 
 const primary_color_input = document.getElementById("primary-color")
 const secondary_color_input = document.getElementById("secondary-color")
@@ -152,6 +155,7 @@ const estructural_inputs = [
     height_slider,
     spread_factor_slider,
     decrease_factor_slider,
+    randomness_input
 ]
 
 const stylish_inputs =[
@@ -196,6 +200,7 @@ function updateTree () {
     const decrease_factor_value = Number(decrease_factor_slider.value)
     const direction_value = Math.PI * Number(direction_slider.value) / 100
     const spread_value = Math.PI/3 * Number(spread_slider.value) / 100
+    const randomness_value = randomness_input.checked
 
     // Estructural parameters
     new_tree = new Tree(
@@ -207,7 +212,7 @@ function updateTree () {
         spread_factor_value,   // Spread Factor
         decrease_factor_value) // Decrease Factor
 
-    new_tree.create(Math.PI * 3/2, direction_value)
+    new_tree.create(Math.PI * 3/2, direction_value, randomness_value)
 
     Render(context, new_tree)
 }
