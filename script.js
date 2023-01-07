@@ -83,7 +83,7 @@ class Tree {
         }
 
         for (let branch of this.branches) {
-            branch.grow(this.spread_factor, orienation)
+            branch.grow(this.spread_factor, orienation, random)
         }
 
     }
