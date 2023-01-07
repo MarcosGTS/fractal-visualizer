@@ -50,20 +50,23 @@ class Tree {
         const branch_length = this.branch_length
         const spread_degree = this.spread_degree
 
-        if (height <= 0) return 
+        if (height <= 0 || branch_length < 1) return 
 
         const half = Math.floor(number_branches/2)
         
         for (let i = -half; i <= half; i++) {
             
             if (number_branches % 2 == 0 && i == 0) continue
-
-            const new_orientation = this.orientation + spread_degree * i + orienation
-            const new_branch_length = branch_length * this.decrease_factor
+            
+            let new_orientation = this.orientation + spread_degree * i + orienation
+            let new_branch_length = branch_length * this.decrease_factor
 
             const new_x = position[0] + branch_length * Math.cos(new_orientation)
             const new_y = position[1] + branch_length * Math.sin(new_orientation)
             const new_position = [new_x, new_y]
+
+            new_orientation = add_variation(new_orientation, .1)
+            new_branch_length = add_variation(new_branch_length, .05)
 
             let new_branch = new Tree(
                 new_position, 
@@ -74,7 +77,7 @@ class Tree {
                 this.spread_factor,
                 this.decrease_factor)
 
-            this.branches.push(new_branch)     
+            if (new_branch) this.branches.push(new_branch)     
         }
 
         for (let branch of this.branches) {
@@ -84,10 +87,6 @@ class Tree {
     }
 
     get_tree_lines() {
-        
-        if (this.branches.length == 0) {
-            return []
-        } 
         
         let points = []
         
@@ -107,11 +106,12 @@ class Tree {
 }
 
 function Render (context, tree) {
-
     context.clearRect(0, 0, canvas.width, canvas.height);
     
     const lines = tree.get_tree_lines()
     const max_height = tree.height
+
+    console.log(lines.length)
 
     for (let line of lines) {
         const percentage = line.height / max_height
@@ -146,10 +146,38 @@ const context = canvas.getContext('2d')
 canvas.width = 500
 canvas.height = 500
 
-const inputs = document.getElementsByTagName("input")
+const estructural_inputs = [
+    direction_slider,
+    spread_slider,
+    height_slider,
+    spread_factor_slider,
+    decrease_factor_slider,
+]
 
-for (let input of inputs) {
+const stylish_inputs =[
+    primary_color_input,
+    secondary_color_input,
+    min_width_slider,
+    max_width_slider,
+]
+
+var new_tree = undefined
+
+for (let input of estructural_inputs) {
     input.addEventListener("input", updateTree)
+}
+
+for (let input of stylish_inputs) {
+    input.addEventListener("input", () => {
+        //Rederer paremeters
+        PRIMARY_COLOR = convert_hex_to_rgb(primary_color_input.value)
+        SECONDARY_COLOR = convert_hex_to_rgb(secondary_color_input.value)
+
+        MIN_WIDTH = Number(min_width_slider.value)
+        MAX_WIDTH = Number(max_width_slider.value)
+
+        Render(context, new_tree)
+    })
 }
 
 function convert_hex_to_rgb(color) {
@@ -180,13 +208,6 @@ function updateTree () {
         decrease_factor_value) // Decrease Factor
 
     new_tree.create(Math.PI * 3/2, direction_value)
-    
-    //Rederer paremeters
-    PRIMARY_COLOR = convert_hex_to_rgb(primary_color_input.value)
-    SECONDARY_COLOR = convert_hex_to_rgb(secondary_color_input.value)
-
-    MIN_WIDTH = Number(min_width_slider.value)
-    MAX_WIDTH = Number(max_width_slider.value)
 
     Render(context, new_tree)
 }
@@ -202,5 +223,11 @@ function get_color_between(color1, color2, t) {
 
     return [red_channel, green_channel, blue_channel]
 }
+
+function add_variation(value, variation = 0) {
+    const percentage = Math.random() * 2 * variation + (1 - variation)
+    return value * percentage
+}
+
 
 updateTree()
