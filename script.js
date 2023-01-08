@@ -171,6 +171,7 @@ for (let input of estructural_inputs) {
     input.addEventListener("input", updateTree)
 }
 
+
 for (let input of stylish_inputs) {
     input.addEventListener("input", () => {
         //Rederer paremeters
@@ -183,6 +184,8 @@ for (let input of stylish_inputs) {
         Render(context, new_tree)
     })
 }
+
+canvas.addEventListener("click", updateTree)
 
 function convert_hex_to_rgb(color) {
     const r = parseInt(color.substr(1, 2), 16)
@@ -199,7 +202,7 @@ function updateTree () {
     const spread_factor_value = Number(spread_factor_slider.value)
     const decrease_factor_value = Number(decrease_factor_slider.value)
     const direction_value = Math.PI * Number(direction_slider.value) / 100
-    const spread_value = Math.PI/3 * Number(spread_slider.value) / 100
+    const spread_value = Math.PI / 2 * Number(spread_slider.value) / 100
     const randomness_value = randomness_input.checked
 
     // Estructural parameters
@@ -233,6 +236,5 @@ function add_variation(value, variation = 0) {
     const percentage = Math.random() * 2 * variation + (1 - variation)
     return value * percentage
 }
-
 
 updateTree()
