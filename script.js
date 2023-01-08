@@ -132,6 +132,9 @@ function Render (context, tree) {
     
 }
 
+const save_btn = document.getElementById("save")
+const refresh_btn = document.getElementById("refresh")
+
 const direction_slider = document.getElementById("tree-direction")
 const spread_slider = document.getElementById("branches-spread")
 const height_slider = document.getElementById("height")
@@ -165,12 +168,13 @@ const stylish_inputs =[
     max_width_slider,
 ]
 
-var new_tree = undefined
+let new_tree = undefined
+
+// SETTING EVENTS
 
 for (let input of estructural_inputs) {
     input.addEventListener("input", updateTree)
 }
-
 
 for (let input of stylish_inputs) {
     input.addEventListener("input", () => {
@@ -186,6 +190,8 @@ for (let input of stylish_inputs) {
 }
 
 canvas.addEventListener("click", updateTree)
+save_btn.addEventListener("click", save_image)
+refresh_btn.addEventListener("click", updateTree)
 
 function convert_hex_to_rgb(color) {
     const r = parseInt(color.substr(1, 2), 16)
@@ -235,6 +241,18 @@ function get_color_between(color1, color2, t) {
 function add_variation(value, variation = 0) {
     const percentage = Math.random() * 2 * variation + (1 - variation)
     return value * percentage
+}
+
+function save_image() {
+    const data = canvas.toDataURL("image/jpg", 1.0)
+    const link = document.createElement('a')
+
+    link.href = data
+    link.download = 'image'
+
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
 }
 
 updateTree()
