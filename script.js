@@ -23,7 +23,7 @@ class Tree {
     }
 
     create(inital_orientation, orientation, random = false) {
-        const new_orientation = inital_orientation 
+        const new_orientation = inital_orientation
         const new_branch_length = this.branch_length * this.decrease_factor
         const new_x = this.position[0] + this.branch_length * Math.cos(new_orientation)
         const new_y = this.position[1] + this.branch_length * Math.sin(new_orientation)
