@@ -192,6 +192,13 @@ for (let input of stylish_inputs) {
 canvas.addEventListener("click", updateTree)
 save_btn.addEventListener("click", save_image)
 refresh_btn.addEventListener("click", updateTree)
+randomness_input.addEventListener("input", () => {
+    if (!randomness_input.checked) {
+        refresh_btn.classList.add("hide")
+    } else {
+        refresh_btn.classList.remove("hide")
+    }
+})
 
 function convert_hex_to_rgb(color) {
     const r = parseInt(color.substr(1, 2), 16)

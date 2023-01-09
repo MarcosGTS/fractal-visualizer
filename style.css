@@ -53,6 +53,10 @@ button {
     padding: 4px 0;
 }
 
+.hide {
+    display: none;
+}
+
 footer {
     width: 100vw;
     color: white;
