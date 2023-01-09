@@ -23,12 +23,17 @@ class Tree {
     }
 
     create(inital_orientation, orientation, random = false) {
-        const new_orientation = inital_orientation
-        const new_branch_length = this.branch_length * this.decrease_factor
+        let new_orientation = inital_orientation
+        let new_branch_length = this.branch_length * this.decrease_factor
         const new_x = this.position[0] + this.branch_length * Math.cos(new_orientation)
         const new_y = this.position[1] + this.branch_length * Math.sin(new_orientation)
         const new_position = [new_x, new_y]
 
+        if (random) {
+            new_orientation = add_variation(new_orientation, .1)
+            new_branch_length = add_variation(new_branch_length, .05)
+        }
+        
         let new_branch = new Tree(
             new_position, 
             this.height - 1, 
@@ -255,7 +260,7 @@ function save_image() {
     const link = document.createElement('a')
 
     link.href = data
-    link.download = 'image'
+    link.download = 'fractal_tree'
 
     document.body.appendChild(link)
     link.click()
