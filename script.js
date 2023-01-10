@@ -22,12 +22,10 @@ class Tree {
         this.branches = []
     }
 
-    create(inital_orientation, orientation, random = false) {
+    create(inital_orientation, orientation_offset, random = false) {
         let new_orientation = inital_orientation
         let new_branch_length = this.branch_length * this.decrease_factor
-        const new_x = this.position[0] + this.branch_length * Math.cos(new_orientation)
-        const new_y = this.position[1] + this.branch_length * Math.sin(new_orientation)
-        const new_position = [new_x, new_y]
+        const new_position = this.get_polar_position(this.position, this.branch_length, new_orientation)
 
         if (random) {
             new_orientation = add_variation(new_orientation, .1)
@@ -45,16 +43,20 @@ class Tree {
 
         this.branches.push(new_branch) 
         
-        new_branch.grow(this.spread_factor, orientation, random)
+        new_branch.grow(orientation_offset, random)
     }
 
-    grow(number_branches, orienation, random) {
+    grow(orienation_offset, is_random) {
         // Will initialize the tree structure
         const position = this.position
         const height = this.height
         const branch_length = this.branch_length
         const spread_degree = this.spread_degree
+        const number_branches = this.spread_factor
+        const reference_orientation = this.orientation + orienation_offset
 
+        let new_branch_length = branch_length * this.decrease_factor
+      
         if (height <= 0 || branch_length < 1) return 
 
         const half = Math.floor(number_branches/2)
@@ -63,16 +65,12 @@ class Tree {
             
             if (number_branches % 2 == 0 && i == 0) continue
             
-            let new_orientation = this.orientation + spread_degree * i + orienation
-            let new_branch_length = branch_length * this.decrease_factor
+            let new_orientation = reference_orientation + spread_degree * i
+            const new_position = this.get_polar_position(position, branch_length, new_orientation)
 
-            const new_x = position[0] + branch_length * Math.cos(new_orientation)
-            const new_y = position[1] + branch_length * Math.sin(new_orientation)
-            const new_position = [new_x, new_y]
-
-            if (random) {
+            if (is_random) {
                 new_orientation = add_variation(new_orientation, .1)
-                new_branch_length = add_variation(new_branch_length, .05)
+                new_branch_length = add_variation(new_branch_length, .1)
             }
             
             let new_branch = new Tree(
@@ -88,53 +86,52 @@ class Tree {
         }
 
         for (let branch of this.branches) {
-            branch.grow(this.spread_factor, orienation, random)
+            branch.grow(orienation_offset, is_random)
         }
 
     }
 
-    get_tree_lines() {
+    get_polar_position(initial_position, length, rad) {
         
-        let points = []
-        
-        for (let branch of this.branches) {
-            const line = {
-                height: branch.height,
-                coordinates: [this.position, branch.position]
-            }
+        const x = initial_position[0] + length * Math.cos(rad)
+        const y = initial_position[1] + length * Math.sin(rad)
 
-            points.push(line)
-            
-            points = points.concat(branch.get_tree_lines())
+        return [x, y]
+    }
+
+    render(context, max_height) {
+        if (!max_height) max_height = this.height
+
+        const percentage = (this.height - 1) / max_height
+        const width = lerp(MIN_WIDTH, MAX_WIDTH, percentage)
+        const color = get_color_between(PRIMARY_COLOR, SECONDARY_COLOR, percentage)
+        
+        for (const branch of this.branches) {
+            branch.render(context, max_height)
         }
 
-        return points
+        for (const branch of this.branches) {
+            draw_line(context, this.position, branch.position, color, width)
+        }
+
     }
 }
 
 function Render (context, tree) {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const lines = tree.get_tree_lines()
-    const max_height = tree.height
+    context.lineCap = 'round'
+    tree.render(context)
+}
 
-    console.log(lines.length)
+function draw_line(context, p1, p2, color, width) {
+    const [red, green, blue] = color
 
-    for (let line of lines) {
-        const percentage = line.height / max_height
-        const [p1, p2] = line.coordinates
-        const [red, green, blue] = get_color_between(PRIMARY_COLOR, SECONDARY_COLOR, percentage)
-        
-        context.lineWidth = lerp(MIN_WIDTH, MAX_WIDTH, percentage)
-        context.lineCap = 'round'
+    context.lineWidth = width
+    context.beginPath()
+    context.moveTo (p1[0], p1[1]);   context.lineTo (p2[0], p2[1]);  
 
-        context.beginPath()
-        context.moveTo (p1[0], p1[1]);   context.lineTo (p2[0], p2[1]);  
-
-        context.strokeStyle = `rgb(${red},${green},${blue})`
-        context.stroke()
-    }
-    
+    context.strokeStyle = `rgb(${red},${green},${blue})`
+    context.stroke()
 }
 
 const save_btn = document.getElementById("save")
